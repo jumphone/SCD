@@ -45,20 +45,29 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     ###########
     COR0=.scdcor(EXP, REF,method=method)
     NCOR0=apply(COR0, 2, .norm_one)
-  
+    
+    i=1
     COR1=COR0
     NCOR1=NCOR0
-
-    i=1
+    this_exp = REF %*% NCOR1
+    cor.mat=.scdcor(this_exp ,EXP, method=method)
+    L=c(L, mean(cor.mat))
+    
+    i=2
     while(i<=N){
         print(i)
         EXP1=REF %*% NCOR1
-        COR2=.scdcor(EXP1, REF,method=method)
-        COR1= COR0 + COR1 - COR2
+        COR2=.scdcor(EXP1, REF, method=method)
+        COR1= COR1 + COR0 - COR2
         NCOR1=apply(COR1, 2, .norm_one)
         this_exp = REF %*% NCOR1
         cor.mat=.scdcor(this_exp ,EXP, method=method)
-        L=c(L, median(cor.mat))
+        L=c(L, mean(cor.mat))
+        if(i>2 & L[i] < L[i-1] ){
+                
+            break()
+            }
+        
         i=i+1
     }
 
