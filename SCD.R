@@ -62,7 +62,7 @@
 
 
 
-SCD <- function(EXP, REF, N=50, method='spearman'){
+SCD <- function(EXP, REF, N=20, method='spearman'){
     ######
     REF=REF
     EXP=EXP
