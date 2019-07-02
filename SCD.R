@@ -29,6 +29,39 @@
     }
 
 
+
+.generate_ref <- function(exp_sc_mat, TAG, min_cell=1, refnames=FALSE){
+    NewRef=c()
+    TAG[,2]=as.character(TAG[,2])
+    if(refnames==FALSE){
+        refnames=names(table(TAG[,2]))}
+        else{refnames=refnames}
+    outnames=c()
+    for(one in refnames){
+        this_col=which(TAG[,2]==one)
+        if(length(this_col)>= min_cell){
+            outnames=c(outnames,one)
+            if(length(this_col) >1){
+                #this_new_ref=apply(exp_sc_mat[,this_col],1,sum)
+                this_new_ref=apply(exp_sc_mat[,this_col],1,mean)
+                }
+                else{this_new_ref = exp_sc_mat[,this_col]}
+            NewRef=cbind(NewRef,this_new_ref)
+            }
+        }
+    rownames(NewRef)=rownames(exp_sc_mat)
+    colnames(NewRef)=outnames
+    if(length(NewRef[1,])==1){
+        NewRef=cbind(NewRef[,1], NewRef[,1])
+        rownames(NewRef)=rownames(exp_sc_mat)
+        colnames(NewRef)=c(outnames,outnames)
+        }
+    NewRef=apply(NewRef, 2, .norm_exp)
+    return(NewRef)
+    }
+
+
+
 SCD <- function(EXP, REF, N=50, method='spearman'){
     ######
     REF=REF
