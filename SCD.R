@@ -1,3 +1,8 @@
+.norm_exp<-function(x){
+    y=x/sum(x)
+    y=y*1000000
+    return(y)
+    }
 
 .scdcor  <- function(exp_sc_mat, exp_ref_mat, method='spearman'){
     #method = "pearson", "kendall", "spearman"
@@ -32,6 +37,11 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     N=N
     ######
     
+    REF=apply(REF,2,.norm_exp)
+    EXP=apply(EXP,2,.norm_exp)    
+    
+    
+    ###########
     COR0=.scdcor(EXP, REF,method=method)
     NCOR0=apply(COR0, 2, .norm_one)
   
