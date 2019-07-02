@@ -29,17 +29,15 @@
     }
 
 
-SCD <- function(EXP, REF, PATH='./SCD.out', N=50, method='spearman'){
+SCD <- function(EXP, REF, N=50, method='spearman'){
     ######
     REF=REF
     EXP=EXP
     method=method
     N=N
-    PATH=PATH
     L=c()
-    ######
-    dir.create(PATH)
-    ######
+    
+    MAT.LIST=list()
     
     
     REF=apply(REF,2,.norm_exp)
@@ -56,15 +54,14 @@ SCD <- function(EXP, REF, PATH='./SCD.out', N=50, method='spearman'){
     NCOR1=NCOR0
     colnames(NCOR1)=colnames(EXP)
     rownames(NCOR1)=colnames(REF)
-    saveRDS(NCOR1,file=paste0(PATH,'/','out.',i,,'.rds'))
+    MAT.LIST=list(MAT.LIST, list(NCOR1))
     
     this_exp = REF %*% NCOR1
     cor.mat=.scdcor(this_exp ,EXP, method=method)
     L=c(L, mean(cor.mat))
     
     
-    
-    
+    ###############
     i=2
     while(i<=N){
         print(i)
@@ -74,24 +71,29 @@ SCD <- function(EXP, REF, PATH='./SCD.out', N=50, method='spearman'){
         NCOR1=apply(COR1, 2, .norm_one)
         colnames(NCOR1)=colnames(EXP)
         rownames(NCOR1)=colnames(REF)
-        saveRDS(NCOR1,file=paste0(PATH,'/','out.',i,,'.rds'))
+        MAT.LIST=list(MAT.LIST, list(NCOR1))
         
         this_exp = REF %*% NCOR1
         cor.mat=.scdcor(this_exp ,EXP, method=method)
         L=c(L, mean(cor.mat))
         i=i+1
     }
-
-    #OUT=NCOR1
-    #colnames(OUT)=colnames(EXP)
-    #rownames(OUT)=colnames(REF)
+    ###############
+    
+    max.index=which(L==max(L))
+    
+    
+    OUT=MAT.LIST[[max.index]]
     
     EXP.OUT=REF %*% OUT
     
     RESULT=list()
-    #RESULT$out=OUT
-    #RESULT$exp=EXP.OUT
+    RESULT$out=OUT
+    RESULT$exp=EXP.OUT
     RESULT$l=L
+    RESULT$col=rep('black',length(L))
+    RESULT$col[max.index]='red'
+    RESULT$max.index=max.index
     return(RESULT)
     }
 
