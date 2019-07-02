@@ -54,7 +54,7 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     NCOR1=NCOR0
     colnames(NCOR1)=colnames(EXP)
     rownames(NCOR1)=colnames(REF)
-    MAT.LIST=list(MAT.LIST, list(NCOR1))
+    MAT.LIST=c(MAT.LIST, list(NCOR1))
     
     this_exp = REF %*% NCOR1
     cor.mat=.scdcor(this_exp ,EXP, method=method)
@@ -71,7 +71,7 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
         NCOR1=apply(COR1, 2, .norm_one)
         colnames(NCOR1)=colnames(EXP)
         rownames(NCOR1)=colnames(REF)
-        MAT.LIST=list(MAT.LIST, list(NCOR1))
+        MAT.LIST=c(MAT.LIST, list(NCOR1))
         
         this_exp = REF %*% NCOR1
         cor.mat=.scdcor(this_exp ,EXP, method=method)
