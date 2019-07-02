@@ -35,6 +35,7 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     EXP=EXP
     method=method
     N=N
+    L=c()
     ######
     
     REF=apply(REF,2,.norm_exp)
@@ -56,6 +57,8 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
         COR1= COR0 + COR1 - COR2
         NCOR1=apply(COR1, 2, .norm_one)
         this_exp = REF %*% NCOR1
+        cor.mat=cor(this_exp ,EXP, method=method)
+        L=c(L, median(cor.mat))
         i=i+1
     }
 
@@ -68,6 +71,7 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     RESULT=list()
     RESULT$out=OUT
     RESULT$exp=EXP.OUT
+    RESULT$l=L
     return(RESULT)
     }
 
