@@ -29,14 +29,18 @@
     }
 
 
-SCD <- function(EXP, REF, N=50, method='spearman'){
+SCD <- function(EXP, REF, PATH='./SCD.out', N=50, method='spearman'){
     ######
     REF=REF
     EXP=EXP
     method=method
     N=N
+    PATH=PATH
     L=c()
     ######
+    dir.create(PATH)
+    ######
+    
     
     REF=apply(REF,2,.norm_exp)
     EXP=apply(EXP,2,.norm_exp)    
@@ -50,9 +54,16 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     print(i)
     COR1=COR0
     NCOR1=NCOR0
+    colnames(NCOR1)=colnames(EXP)
+    rownames(NCOR1)=colnames(REF)
+    saveRDS(NCOR1,file=paste0(PATH,'/','out.',i,,'.rds'))
+    
     this_exp = REF %*% NCOR1
     cor.mat=.scdcor(this_exp ,EXP, method=method)
     L=c(L, mean(cor.mat))
+    
+    
+    
     
     i=2
     while(i<=N){
@@ -61,21 +72,25 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
         COR2=.scdcor(EXP1, REF, method=method)
         COR1= COR1 + COR0 - COR2
         NCOR1=apply(COR1, 2, .norm_one)
+        colnames(NCOR1)=colnames(EXP)
+        rownames(NCOR1)=colnames(REF)
+        saveRDS(NCOR1,file=paste0(PATH,'/','out.',i,,'.rds'))
+        
         this_exp = REF %*% NCOR1
         cor.mat=.scdcor(this_exp ,EXP, method=method)
         L=c(L, mean(cor.mat))
         i=i+1
     }
 
-    OUT=NCOR1
-    colnames(OUT)=colnames(EXP)
-    rownames(OUT)=colnames(REF)
+    #OUT=NCOR1
+    #colnames(OUT)=colnames(EXP)
+    #rownames(OUT)=colnames(REF)
     
     EXP.OUT=REF %*% OUT
     
     RESULT=list()
-    RESULT$out=OUT
-    RESULT$exp=EXP.OUT
+    #RESULT$out=OUT
+    #RESULT$exp=EXP.OUT
     RESULT$l=L
     return(RESULT)
     }
