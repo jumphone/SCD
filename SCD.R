@@ -62,7 +62,13 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     OUT=NCOR1
     colnames(OUT)=colnames(EXP)
     rownames(OUT)=colnames(REF)
-    return(OUT)
+    
+    EXP.OUT=REF %*% OUT
+    
+    RESULT=list()
+    RESULT$out=OUT
+    RESULT$exp=EXP.OUT
+    return(RESULT)
     }
 
 
