@@ -57,7 +57,7 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
         COR1= COR0 + COR1 - COR2
         NCOR1=apply(COR1, 2, .norm_one)
         this_exp = REF %*% NCOR1
-        cor.mat=cor(this_exp ,EXP, method=method)
+        cor.mat=.scdcor(this_exp ,EXP, method=method)
         L=c(L, median(cor.mat))
         i=i+1
     }
