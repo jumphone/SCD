@@ -37,16 +37,15 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     N=N
     L=c()
     
-    MAT.LIST=list()
-    
-    
     REF=apply(REF,2,.norm_exp)
     EXP=apply(EXP,2,.norm_exp)    
-    
-    
+      
     ###########
     COR0=.scdcor(EXP, REF,method=method)
     NCOR0=apply(COR0, 2, .norm_one)
+    
+    
+    MAT.LIST=list()
     
     i=1
     print(i)
