@@ -1,4 +1,6 @@
 
+
+
 REF=readRDS('../TUMOR_REF.RDS')
 .norm_exp<-function(x){
     y=x/sum(x)
