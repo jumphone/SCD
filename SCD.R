@@ -93,6 +93,7 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     RESULT$col=rep('black',length(L))
     RESULT$col[max.index]='red'
     RESULT$max.index=max.index
+    RESULT$mat.list=MAT.LIST   
     return(RESULT)
     }
 
