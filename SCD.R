@@ -63,6 +63,10 @@
 
 
 SCD <- function(EXP, REF, N=20, method='spearman'){
+    ##############################
+    print('SCD start!')
+    print(Sys.time())
+    ##############################
     ######
     REF=REF
     EXP=EXP
@@ -127,6 +131,10 @@ SCD <- function(EXP, REF, N=20, method='spearman'){
     RESULT$col[max.index]='red'
     RESULT$max.index=max.index
     RESULT$mat.list=MAT.LIST   
+    ##############################
+    print('SCD finished!')
+    print(Sys.time())
+    ##############################
     return(RESULT)
     }
 
