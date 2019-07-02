@@ -25,9 +25,13 @@
 
 
 SCD <- function(EXP, REF, N=50, method='spearman'){
+    ######
     REF=REF
     EXP=EXP
     method=method
+    N=N
+    ######
+    
     COR0=.scdcor(EXP, REF,method=method)
     NCOR0=apply(COR0, 2, .norm_one)
   
