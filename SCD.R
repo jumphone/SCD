@@ -47,6 +47,7 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
     NCOR0=apply(COR0, 2, .norm_one)
     
     i=1
+    print(i)
     COR1=COR0
     NCOR1=NCOR0
     this_exp = REF %*% NCOR1
