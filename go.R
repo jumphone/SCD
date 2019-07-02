@@ -33,6 +33,94 @@ rownames(EXP)=rownames(REF)
 ###############
 
 
+#####################
+getRanMap<-function(x){
+  oldx=x
+  x[order(x)]=sort(rnorm(length(x)))
+  y=x-min(x)
+  y[which(oldx==0)]=0
+  return(y)
+  }
+
+
+set.seed(1)
+REXP=apply(EXP,2,getRanMap)
+
+REXP=REXP
+  set.seed(123)
+  addNOI=function(x){
+     M=mean(x)
+     y=x+M/3*(runif(length(x))*2-1)
+     return(y)
+  }
+
+  REXP=t(apply(REXP,1,addNOI))
+  REXP[which( REXP<0)]=0
+  rownames( REXP)=rownames(REXP)
+  colnames(REXP)=colnames(REXP)
+
+REXP=apply(REXP,2,.norm_exp) 
+################
+
+
+
+
+
+OUT=SCD(REXP, REF, N=50, method='spearman')
+plot(OUT$l)
+
+
+CORMAT=cor(t(OUT$out),t(ALLR))
+
+
+CORMAT=cor(OUT$exp ,EXP, method='spearman')
+
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .get_cor  <- function(exp_sc_mat, exp_ref_mat, method='kendall',CPU=4, print_step=10, gene_check=FALSE){
     #method = "pearson", "kendall", "spearman"
