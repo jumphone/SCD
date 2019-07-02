@@ -64,11 +64,6 @@ SCD <- function(EXP, REF, N=50, method='spearman'){
         this_exp = REF %*% NCOR1
         cor.mat=.scdcor(this_exp ,EXP, method=method)
         L=c(L, mean(cor.mat))
-        if(i>2 & L[i] < L[i-1] ){
-                
-            break()
-            }
-        
         i=i+1
     }
 
