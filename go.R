@@ -165,6 +165,34 @@ heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(
 
 
 
+source('SCD.R')
+OUT=SCD(REXP, V.SC.REF, LR=0.5, N=20, method='spearman')
+plot(OUT$l, col=OUT$col, pch=16)
+
+CORMAT=cor(t(OUT$mat.list[[1]]), t(ALLR))
+
+
+#pdf('RESULT_SCD_ALL.pdf',width=7,height=7)
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+#dev.off()
+
+
+CB=read.table('CIBERSORT.Output_Job17.txt',header=T,row.names=1,sep='\t')
+
+CORMAT=cor(CB[,c(1:(ncol(CB)-3))], t(ALLR), method='pearson')
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+
+
+
+
+
+
+
+
 
 CB=read.table('CIBERSORT.Output_Job14.txt',header=T,row.names=1,sep='\t')
 
