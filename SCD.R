@@ -5,8 +5,6 @@
     return(y)
     }
 
-
-
 .norm_one <- function(x){
     y=scale(x) 
     y=pnorm(y)
