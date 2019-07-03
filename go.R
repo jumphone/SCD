@@ -135,20 +135,39 @@ VREF=NewRef[VG,]
 write.table(VREF, file='VREF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
 #####################################
 
-source('SCD.R')
 
-OUT=SCD(REXP, VREF, N=20, method='spearman')
+
+
+
+
+
+
+
+source('SCD.R')
+OUT=SCD(REXP, VREF, LR=0.1, N=20, method='spearman')
 plot(OUT$l, col=OUT$col, pch=16)
 
 
 CORMAT=cor(t(OUT$out), t(ALLR), method='pearson')
 
 
-pdf('RESULT_SCD.pdf',width=7,height=7)
+#pdf('RESULT_SCD.pdf',width=7,height=7)
 library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
     trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
-dev.off()
+#dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
