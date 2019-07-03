@@ -208,20 +208,30 @@ write.table(TMP, file='V.SC.REF_scmat_sig.txt',sep='\t',row.names=T,col.names=T,
 
 
 source('SCD_orig.R')
-OUT=SCD(REXP, V.SC.REF, COMBAT=TRUE)
+OUT=SCD(REXP, V.SC.REF, COMBAT=FALSE)
 #OUT=SCD(REXP, V.SC.REF, COMBAT=FALSE)
 #plot(OUT$l, col=OUT$col, pch=16)
-
 RATIO=OUT$out
 CORMAT=cor(t(RATIO), t(ALLR), method='pearson')
 library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
     trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
 CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7]
-
 sum(CORMAT)-(CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7])
 
 
+
+source('SCD_orig.R')
+OUT=SCD(REXP, V.SC.REF, COMBAT=TRUE)
+#OUT=SCD(REXP, V.SC.REF, COMBAT=FALSE)
+#plot(OUT$l, col=OUT$col, pch=16)
+RATIO=OUT$out
+CORMAT=cor(t(RATIO), t(ALLR), method='pearson')
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7]
+sum(CORMAT)-(CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7])
 
 
 CB=read.table('CIBERSORT.Output_Job19.txt',header=T,row.names=1,sep='\t')
@@ -230,9 +240,7 @@ CORMAT=cor(t(RATIO), t(ALLR), method='pearson')
 library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
     trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
-
 CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7]
-
 sum(CORMAT)-(CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7])
 
 
@@ -244,9 +252,16 @@ CORMAT=cor(t(RATIO), t(ALLR), method='pearson')
 library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
     trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
-
 CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7]
 sum(CORMAT)-(CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7])
+
+
+
+
+
+
+
+
 
 
 
