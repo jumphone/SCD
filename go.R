@@ -144,7 +144,7 @@ write.table(VREF, file='VREF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
 
 
 source('SCD.R')
-OUT=SCD(REXP, VREF, LR=0.1, N=20, method='spearman')
+OUT=SCD(REXP, VREF, LR=10, N=10, method='spearman')
 plot(OUT$l, col=OUT$col, pch=16)
 
 
@@ -166,12 +166,7 @@ heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(
 
 
 
-
-
-
-
-
-CB=read.table('CIBERSORT.Output_Job16.txt',header=T,row.names=1,sep='\t')
+CB=read.table('CIBERSORT.Output_Job14.txt',header=T,row.names=1,sep='\t')
 
 CORMAT=cor(CB[,c(1:(ncol(CB)-3))], t(ALLR), method='pearson')
 
@@ -211,17 +206,17 @@ dev.off()
 
 
 
-OUT1=SCD(REXP, SC.REF, N=20, method='spearman')
-plot(OUT1$l, col=OUT1$col, pch=16)
+OUT=SCD(REXP, V.SC.REF, LR=0.5, N=50, method='spearman')
+plot(OUT$l, col=OUT$col, pch=16)
 
-CORMAT=cor(t(OUT1$out), t(ALLR))
+CORMAT=cor(t(OUT$out), t(ALLR))
 
 
-pdf('RESULT_SCD_ALL.pdf',width=7,height=7)
+#pdf('RESULT_SCD_ALL.pdf',width=7,height=7)
 library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
     trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
-dev.off()
+#dev.off()
 
 
 
