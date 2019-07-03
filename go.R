@@ -95,9 +95,13 @@ V.SC.REF=SC.REF[VG,]
 
 V.SC.REF=V.SC.REF[,c(1,4,5,3,2)]
 
-#####################################
-write.table(V.SC.REF, file='V.SC.REF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
 
+TMP=sc_mat[VG,]
+colnames(TMP)=TAG[,2]
+
+write.table(V.SC.REF, file='V.SC.REF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
+write.table(TMP, file='V.SC.REF_scmat_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
+#####################################
 
 
 OUT=SCD(REXP, V.SC.REF, N=20, method='spearman')
