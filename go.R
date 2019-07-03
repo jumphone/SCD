@@ -2,13 +2,13 @@ source('SCD.R')
 
 REF=read.table('Reference_expression.txt',sep='\t',header=T,row.names=1)
 REF[,4] = REF[,4] + REF[,5]
-REF=REF[,c(1,2,4,6,7)]
+REF=REF[,c(1,2,3, 4,6,7)]
 
 REF=log(REF+1,10)
 REF=apply(REF, 2, .norm_exp)
 hist(REF[,1])
 
-colnames(REF)=c('ASTRO','NEURON','OLIGO','MICRO','ENDO')
+colnames(REF)=c('ASTRO','NEURON','OPC','OLIGO','MICRO','ENDO')
 
 
 
@@ -52,7 +52,7 @@ REXP=REXP
   set.seed(123)
   addNOI=function(x){
      M=mean(x)
-     y=x+M/3*(runif(length(x))*2-1)
+     y=x+M/2 * (runif(length(x))*2-1)
      return(y)
   }
 
@@ -89,11 +89,13 @@ TAG[which(TAG[,2]=='oligodendrocytes'),2]='OLIGO'
 SC.REF=.generate_ref(sc_mat, TAG, min_cell=1)
 SC.REF=apply(SC.REF, 2, .norm_exp)
 
+SC.REF=SC.REF[,c(1,4,5,3,2)]
+
 VAR=apply(SC.REF, 1, var)
 VG=which(rank(-VAR) <= 2000  )
 V.SC.REF=SC.REF[VG,]
 
-V.SC.REF=V.SC.REF[,c(1,4,5,3,2)]
+#V.SC.REF=V.SC.REF[,c(1,4,5,3,2)]
 
 
 TMP=sc_mat[VG,]
@@ -103,12 +105,26 @@ write.table(V.SC.REF, file='V.SC.REF_sig.txt',sep='\t',row.names=T,col.names=T,q
 write.table(TMP, file='V.SC.REF_scmat_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
 #####################################
 
+OUT1=SCD(REXP, SC.REF, N=20, method='spearman')
+plot(OUT1$l, col=OUT1$col, pch=16)
+
+CORMAT=cor(t(OUT1$out), t(ALLR))
+
+
+pdf('RESULT_SCD_ALL.pdf',width=7,height=7)
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+dev.off()
+
+
+
+
 
 OUT=SCD(REXP, V.SC.REF, N=20, method='spearman')
 plot(OUT$l, col=OUT$col, pch=16)
 
-
-CORMAT=cor(t(OUT$out), t(ALLR))
+CORMAT=cor(t(OUT$out), t(ALLR), method='pearson')
 
 
 pdf('RESULT_SCD.pdf',width=7,height=7)
@@ -119,9 +135,9 @@ dev.off()
 
 
 
-CB=read.table('CIBERSORT.Output_Job12.txt',header=T,row.names=1,sep='\t')
+CB=read.table('CIBERSORT.Output_Job13.txt',header=T,row.names=1,sep='\t')
 
-CORMAT=cor(CB[,c(1:(ncol(CB)-3))], t(ALLR))
+CORMAT=cor(CB[,c(1:(ncol(CB)-3))], t(ALLR), method='pearson')
 pdf('RESULT_CB.pdf',width=7,height=7)
 library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
@@ -131,7 +147,7 @@ dev.off()
 
 
 
-CBX=read.table('CIBERSORTx_Job5_Adjusted.txt',header=T,row.names=1,sep='\t')
+CBX=read.table('CIBERSORTx_Job6_Adjusted.txt',header=T,row.names=1,sep='\t')
 
 
 
