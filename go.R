@@ -1,14 +1,15 @@
 source('SCD.R')
 
 REF=read.table('Reference_expression.txt',sep='\t',header=T,row.names=1)
-REF[,4] = REF[,4] + REF[,5]
-REF=REF[,c(1,2,3, 4,6,7)]
+#REF[,4] = REF[,4] + REF[,5]
+#REF=REF[,c(1,2,3, 4,6,7)]
 
 REF=log(REF+1,10)
 REF=apply(REF, 2, .norm_exp)
 hist(REF[,1])
 
-colnames(REF)=c('ASTRO','NEURON','OPC','OLIGO','MICRO','ENDO')
+#colnames(REF)=c('ASTRO','NEURON','OPC','OLIGO','MICRO','ENDO')
+colnames(REF)=c('ASTRO','NEURON','OPC','NFOL','MOL','MICRO','ENDO')
 
 
 
@@ -52,7 +53,7 @@ REXP=REXP
   set.seed(123)
   addNOI=function(x){
      M=mean(x)
-     y=x+M/2 * (runif(length(x))*2-1)
+     y=x+M/3 * (runif(length(x))*2-1)
      return(y)
   }
 
@@ -66,6 +67,12 @@ REXP=apply(REXP,2,.norm_exp)
 ################
 #rownames(REXP)=toupper(rownames(REXP))
 write.table(REXP, file='REXP_mix.txt',sep='\t',row.names=T,col.names=T,quote=F)
+
+
+
+
+
+
 #####################################
 
 
@@ -105,6 +112,86 @@ write.table(V.SC.REF, file='V.SC.REF_sig.txt',sep='\t',row.names=T,col.names=T,q
 write.table(TMP, file='V.SC.REF_scmat_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
 #####################################
 
+
+
+#####################################
+
+exp_ref_mat=read.table('Brain_ref_mouse.txt',header=T,sep='\t',row.names=1)
+REF_TAG=colnames(exp_ref_mat)
+tmp=strsplit(REF_TAG, "_")
+REF_TAG=c()
+for(one in tmp){REF_TAG=c(REF_TAG, one[1])}
+NewRef=.generate_ref(exp_ref_mat, cbind(REF_TAG,REF_TAG), min_cell=1) 
+colnames(NewRef)=c('ASTRO','ASTRO.GLIAL','GRANU','EPEND','MACROPHAGE','MICRO','MOL','NEURON','OPC','GABA','SCHWANN')
+NewRef=log(NewRef+1,10)
+NewRef=apply(NewRef, 2, .norm_exp)
+
+
+VAR=apply(NewRef, 1, var)
+VG=which(rank(-VAR) <= 5000  )
+VREF=NewRef[VG,]
+
+
+write.table(VREF, file='VREF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
+#####################################
+
+source('SCD.R')
+
+OUT=SCD(REXP, VREF, N=20, method='spearman')
+plot(OUT$l, col=OUT$col, pch=16)
+
+
+CORMAT=cor(t(OUT$out), t(ALLR), method='pearson')
+
+
+pdf('RESULT_SCD.pdf',width=7,height=7)
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+dev.off()
+
+
+
+CB=read.table('CIBERSORT.Output_Job16.txt',header=T,row.names=1,sep='\t')
+
+CORMAT=cor(CB[,c(1:(ncol(CB)-3))], t(ALLR), method='pearson')
+
+pdf('RESULT_CB.pdf',width=7,height=7)
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 OUT1=SCD(REXP, SC.REF, N=20, method='spearman')
 plot(OUT1$l, col=OUT1$col, pch=16)
 
@@ -135,7 +222,7 @@ dev.off()
 
 
 
-CB=read.table('CIBERSORT.Output_Job13.txt',header=T,row.names=1,sep='\t')
+CB=read.table('CIBERSORT.Output_Job14.txt',header=T,row.names=1,sep='\t')
 
 CORMAT=cor(CB[,c(1:(ncol(CB)-3))], t(ALLR), method='pearson')
 pdf('RESULT_CB.pdf',width=7,height=7)
