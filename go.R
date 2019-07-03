@@ -1,27 +1,27 @@
+source('SCD.R')
 
+REF=read.table('Reference_expression.txt',sep='\t',header=T,row.names=1)
+REF[,4] = REF[,4] + REF[,5]
+REF=REF[,c(1,2,4,6,7)]
 
+REF=log(REF+1,10)
+REF=apply(REF, 2, .norm_exp)
+hist(REF[,1])
 
-REF=readRDS('../TUMOR_REF.RDS')
-.norm_exp<-function(x){
-    y=x/sum(x)
-    y=y*1000000
-    return(y)
-    }
-REF=apply(REF,2,.norm_exp)
+colnames(REF)=c('ASTRO','NEURON','OLIGO','MICRO','ENDO')
 
-colnames(REF)=c('A','E','M','N','OL','OP','Q','NK','TA','TO','TP1','TP2','T')
 
 
 
 ###############
 NUM=100
-ALLR=matrix(0,ncol=NUM,nrow=13)
+ALLR=matrix(0,ncol=NUM,nrow=ncol(REF))
 EXP=matrix(0,ncol=NUM,nrow=nrow(REF))
 
 set.seed(1)
 i=1
 while(i<=NUM){
-    this_r=runif(13)
+    this_r=runif(ncol(REF))
     this_r=this_r/sum(this_r)
     this_exp=REF %*% this_r
     ALLR[,i]=this_r
@@ -62,24 +62,81 @@ REXP=REXP
   colnames(REXP)=colnames(REXP)
 
 REXP=apply(REXP,2,.norm_exp) 
+
 ################
+#rownames(REXP)=toupper(rownames(REXP))
+write.table(REXP, file='REXP_mix.txt',sep='\t',row.names=T,col.names=T,quote=F)
+#####################################
+
+
+sc_mat=read.table('Zeisel_exp_sc_mat.txt',sep='\t',header=T,row.names=1)
+sc_mat=log(sc_mat+1,10)
+sc_mat=apply(sc_mat, 2, .norm_exp)
 
 
 
+TAG=read.table('Zeisel_exp_sc_mat_cluster_merged.txt',header=T,sep='\t')
+table(TAG[,2])
+TAG[,2]=as.character(TAG[,2])
+TAG[which(TAG[,2]=='astrocytes_ependymal'),2]='ASTRO'
+TAG[which(TAG[,2]=='endothelial-mural'),2]='ENDO'
+TAG[which(TAG[,2]=='microglia'),2]='MICRO'
+TAG[which(TAG[,2]=='neurons'),2]='NEURON'
+TAG[which(TAG[,2]=='oligodendrocytes'),2]='OLIGO'
 
 
-OUT=SCD(REXP, REF, N=50, method='spearman')
-plot(OUT$l)
+
+SC.REF=.generate_ref(sc_mat, TAG, min_cell=1)
+SC.REF=apply(SC.REF, 2, .norm_exp)
+
+VAR=apply(SC.REF, 1, var)
+VG=which(rank(-VAR) <= 2000  )
+V.SC.REF=SC.REF[VG,]
+
+V.SC.REF=V.SC.REF[,c(1,4,5,3,2)]
+
+#####################################
+write.table(V.SC.REF, file='V.SC.REF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
 
 
-CORMAT=cor(t(OUT$out),t(ALLR))
+
+OUT=SCD(REXP, V.SC.REF, N=20, method='spearman')
+plot(OUT$l, col=OUT$col, pch=16)
 
 
-CORMAT=cor(OUT$exp ,EXP, method='spearman')
+CORMAT=cor(t(OUT$out), t(ALLR))
 
+
+pdf('RESULT_SCD.pdf',width=7,height=7)
 library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
-trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+dev.off()
+
+
+
+CB=read.table('CIBERSORT.Output_Job12.txt',header=T,row.names=1,sep='\t')
+
+CORMAT=cor(CB[,c(1:(ncol(CB)-3))], t(ALLR))
+pdf('RESULT_CB.pdf',width=7,height=7)
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+dev.off()
+
+
+
+
+CBX=read.table('CIBERSORTx_Job5_Adjusted.txt',header=T,row.names=1,sep='\t')
+
+
+
+CORMAT=cor(CBX[,c(1:(ncol(CBX)-3))], t(ALLR))
+pdf('RESULT_CBX.pdf',width=7,height=7)
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+dev.off()
 
 
 
