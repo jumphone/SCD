@@ -81,7 +81,7 @@
 
 SCD <- function(EXP, REF, COMBAT=TRUE){
     ##############################
-    print('SCD start!')
+    print('Start!')
     print(Sys.time())
     ##############################
     ######
@@ -127,17 +127,25 @@ SCD <- function(EXP, REF, COMBAT=TRUE){
         OUT=cbind(OUT,this_ratio)
         i=i+1
     }
-
-
     rownames(OUT)=colnames(REF)
     colnames(OUT)=colnames(EXP)
 
-    
+
+    ##################################
     RESULT=list()
+    RESULT$exp=EXP
+    RESULT$ref=REF
+    RESULT$combat=COMBAT
+    
     RESULT$out=OUT
     
+    if(COMBAT==TRUE){
+        RESULT$combat.exp=ALL
+        RESULT$combat.batch=BATCH
+        RESULT$combat.adjexp=ALL.combat
+        }
     ##############################
-    print('SCD finished!')
+    print('Finished!')
     print(Sys.time())
     ##############################
     return(RESULT)
