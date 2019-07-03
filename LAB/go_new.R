@@ -86,25 +86,20 @@ write.table(REXP, file='REXP_mix.txt',sep='\t',row.names=T,col.names=T,quote=F)
 VAR=apply(REF,1,var)
 VG=which(VAR>=-(sort(-VAR)[2000]))
 VREF=REF[VG,]
+write.table(VREF, file='VREF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
 
 
 
 
 source('SCD_orig.R')
-OUT=SCD(REXP, REF)
+OUT=SCD(REXP, VREF)
 #plot(OUT$l, col=OUT$col, pch=16)
 
 RATIO=OUT$out
-
 CORMAT=cor(t(RATIO), t(ALLR), method='pearson')
-#CORMAT=cor(t(OUT$mat.list[[300]]), t(ALLR), method='pearson')
-
-
-#pdf('RESULT_SCD.pdf',width=7,height=7)
 library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
     trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
-#dev.off()
 
 SCORE=0
 i=1
@@ -125,7 +120,172 @@ print(LOSS)
 print(SCORE-LOSS)
 
 
-cbind(REXP, VREF)
+
+
+
+
+
+
+
+CB=read.table('CIBERSORT.Output_Job18.txt',header=T,row.names=1,sep='\t')
+RATIO=t(CB[,c(1:(ncol(CB)-3))])
+CORMAT=cor(t(RATIO), t(ALLR), method='pearson')
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+
+SCORE=0
+i=1
+while(i<=ncol(CORMAT)){
+   SCORE=SCORE+CORMAT[i,i]
+   i=i+1
+}
+print(SCORE)
+
+LOSS=0
+i=1
+while(i<=ncol(CORMAT)){
+   LOSS=LOSS+sum(CORMAT[which(c(1:ncol(CORMAT))!=i),i])
+   i=i+1
+}
+print(LOSS)
+
+print(SCORE-LOSS)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+sc_mat=read.table('Zeisel_exp_sc_mat.txt',sep='\t',header=T,row.names=1)
+sc_mat=log(sc_mat+1,10)
+sc_mat=apply(sc_mat, 2, .norm_exp)
+
+
+
+TAG=read.table('Zeisel_exp_sc_mat_cluster_merged.txt',header=T,sep='\t')
+table(TAG[,2])
+TAG[,2]=as.character(TAG[,2])
+TAG[which(TAG[,2]=='astrocytes_ependymal'),2]='ASTRO'
+TAG[which(TAG[,2]=='endothelial-mural'),2]='ENDO'
+TAG[which(TAG[,2]=='microglia'),2]='MICRO'
+TAG[which(TAG[,2]=='neurons'),2]='NEURON'
+TAG[which(TAG[,2]=='oligodendrocytes'),2]='OLIGO'
+
+
+
+SC.REF=.generate_ref(sc_mat, TAG, min_cell=1)
+SC.REF=apply(SC.REF, 2, .norm_exp)
+
+SC.REF=SC.REF[,c(1,4,5,3,2)]
+
+VAR=apply(SC.REF, 1, var)
+VG=which(rank(-VAR) <= 2000  )
+V.SC.REF=SC.REF[VG,]
+
+#V.SC.REF=V.SC.REF[,c(1,4,5,3,2)]
+
+
+TMP=sc_mat[VG,]
+colnames(TMP)=TAG[,2]
+
+write.table(V.SC.REF, file='V.SC.REF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
+write.table(TMP, file='V.SC.REF_scmat_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
+
+
+
+
+
+
+source('SCD_orig.R')
+OUT=SCD(REXP, V.SC.REF, COMBAT=TRUE)
+#OUT=SCD(REXP, V.SC.REF, COMBAT=FALSE)
+#plot(OUT$l, col=OUT$col, pch=16)
+
+RATIO=OUT$out
+CORMAT=cor(t(RATIO), t(ALLR), method='pearson')
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7]
+
+sum(CORMAT)-(CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7])
+
+
+
+
+CB=read.table('CIBERSORT.Output_Job19.txt',header=T,row.names=1,sep='\t')
+RATIO=t(CB[,c(1:(ncol(CB)-3))])
+CORMAT=cor(t(RATIO), t(ALLR), method='pearson')
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+
+CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7]
+
+sum(CORMAT)-(CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7])
+
+
+
+
+CB=read.table('CIBERSORTx_Job7_Adjusted.txt',header=T,row.names=1,sep='\t')
+RATIO=t(CB[,c(1:(ncol(CB)-3))])
+CORMAT=cor(t(RATIO), t(ALLR), method='pearson')
+library('gplots')
+heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
+    trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
+
+CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7]
+sum(CORMAT)-(CORMAT[1,1]+CORMAT[2,2]+CORMAT[3,4]+CORMAT[3,5]+CORMAT[4,6]+CORMAT[5,7])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
