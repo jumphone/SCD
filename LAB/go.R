@@ -114,41 +114,14 @@ write.table(TMP, file='V.SC.REF_scmat_sig.txt',sep='\t',row.names=T,col.names=T,
 
 
 
-#####################################
-
-exp_ref_mat=read.table('Brain_ref_mouse.txt',header=T,sep='\t',row.names=1)
-REF_TAG=colnames(exp_ref_mat)
-tmp=strsplit(REF_TAG, "_")
-REF_TAG=c()
-for(one in tmp){REF_TAG=c(REF_TAG, one[1])}
-NewRef=.generate_ref(exp_ref_mat, cbind(REF_TAG,REF_TAG), min_cell=1) 
-colnames(NewRef)=c('ASTRO','ASTRO.GLIAL','GRANU','EPEND','MACROPHAGE','MICRO','MOL','NEURON','OPC','GABA','SCHWANN')
-NewRef=log(NewRef+1,10)
-NewRef=apply(NewRef, 2, .norm_exp)
 
 
-VAR=apply(NewRef, 1, var)
-VG=which(rank(-VAR) <= 5000  )
-VREF=NewRef[VG,]
-
-
-write.table(VREF, file='VREF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
-#####################################
-
-
-
-
-
-
-
-
-
-source('SCD.R')
-OUT=SCD(REXP, VREF, LR=10, N=10, method='spearman')
+source('SCD_orig.R')
+OUT=SCD(REXP, SC.REF, N=20, method='spearman')
 plot(OUT$l, col=OUT$col, pch=16)
 
-
 CORMAT=cor(t(OUT$out), t(ALLR), method='pearson')
+#CORMAT=cor(t(OUT$mat.list[[20]]), t(ALLR), method='pearson')
 
 
 #pdf('RESULT_SCD.pdf',width=7,height=7)
@@ -156,6 +129,41 @@ library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
     trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
 #dev.off()
+
+
+
+
+EXP=REXP
+REF=SC.REF
+LR=0.1
+N=10
+method='spearman'
+
+
+
+exp_sc_mat=EXP
+exp_ref_mat=REF.MSK
+method='spearman'
+method=method
+    exp_sc_mat=exp_sc_mat[order(rownames(exp_sc_mat)),]
+    exp_ref_mat=exp_ref_mat[order(rownames(exp_ref_mat)),]
+    gene_sc=rownames(exp_sc_mat)
+    gene_ref=rownames(exp_ref_mat)
+    gene_over= gene_sc[which(gene_sc %in% gene_ref)]
+    exp_sc_mat=exp_sc_mat[which(gene_sc %in% gene_over),]
+    exp_ref_mat=exp_ref_mat[which(gene_ref %in% gene_over),]
+    colname_sc=colnames(exp_sc_mat)
+    colname_ref=colnames(exp_ref_mat)
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -576,3 +584,28 @@ library('gplots')
 heatmap.2(CORMAT,scale=c("none"),dendrogram='none',Rowv=F,Colv=F,cellnote=round(CORMAT,2),notecol='black',
 trace='none',col=colorRampPalette(c('royalblue','grey80','indianred')),margins=c(10,10))
 
+
+
+
+
+
+#####################################
+
+exp_ref_mat=read.table('Brain_ref_mouse.txt',header=T,sep='\t',row.names=1)
+REF_TAG=colnames(exp_ref_mat)
+tmp=strsplit(REF_TAG, "_")
+REF_TAG=c()
+for(one in tmp){REF_TAG=c(REF_TAG, one[1])}
+NewRef=.generate_ref(exp_ref_mat, cbind(REF_TAG,REF_TAG), min_cell=1) 
+colnames(NewRef)=c('ASTRO','ASTRO.GLIAL','GRANU','EPEND','MACROPHAGE','MICRO','MOL','NEURON','OPC','GABA','SCHWANN')
+NewRef=log(NewRef+1,10)
+NewRef=apply(NewRef, 2, .norm_exp)
+
+
+VAR=apply(NewRef, 1, var)
+VG=which(rank(-VAR) <= 5000  )
+VREF=NewRef[VG,]
+
+
+write.table(VREF, file='VREF_sig.txt',sep='\t',row.names=T,col.names=T,quote=F)
+#####################################
